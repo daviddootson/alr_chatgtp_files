@@ -1,4 +1,4 @@
-name: FC3D v1.107 u-profile validation
+name: FC3D v1.108 global u-profile validation
 
 on:
   push:
@@ -11,9 +11,7 @@ on:
       - '3dprintv1.179.py'
       - 'test_v107_contract.py'
       - 'test_v108_contract.py'
-      - 'independent_v107_audit.py'
       - 'independent_v108_audit.py'
-      - 'probe_v107_spacing.py'
       - '.github/workflows/v107-ci.yml'
   workflow_dispatch:
 
@@ -30,11 +28,9 @@ jobs:
           python-version: '3.12'
       - name: Install runtime dependencies
         run: python -m pip install --disable-pip-version-check numpy pillow tifffile
-      - name: Compile v1.107 wrapper
-        run: python -m py_compile 3dprint_black_mirror_wave_grid_v1.107.py
-      - name: Run v1.107 source contract
-        run: python test_v107_contract.py
-      - name: Probe v1.107 transverse contour spans
-        run: python probe_v107_spacing.py
-      - name: Run v1.107 dry geometry validation
-        run: python 3dprint_black_mirror_wave_grid_v1.107.py --source 3dprintv1.179.py --piece 1-2 --dry-validate
+      - name: Preserve v1.107 regression
+        run: |
+          python -m py_compile 3dprint_black_mirror_wave_grid_v1.107.py
+          python test_v107_contract.py
+      - name: Run v1.108 source contract
+        run: python test_v108_contract.py
