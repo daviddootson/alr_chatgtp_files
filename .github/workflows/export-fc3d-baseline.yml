@@ -1,0 +1,25 @@
+name: Export FC3D baseline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/export-fc3d-baseline.yml'
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Upload exact baseline files
+        uses: actions/upload-artifact@v4
+        with:
+          name: fc3d-baseline
+          path: |
+            3dprint_black_mirror_wave_grid_v1.91.py
+            3dprint_black_mirror_wave_grid_v1.98.py
+            3dprintv1.179.py
+            3mm_cube_for_0p3mm_slice_PETG_12m6s.gcode.3mf
+          if-no-files-found: error
+          retention-days: 1
