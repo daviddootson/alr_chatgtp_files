@@ -32,5 +32,9 @@ jobs:
         run: |
           python -m py_compile 3dprint_black_mirror_wave_grid_v1.107.py
           python test_v107_contract.py
+      - name: Compile v1.108
+        run: python -m py_compile 3dprint_black_mirror_wave_grid_v1.108.py
       - name: Run v1.108 source contract
         run: python test_v108_contract.py
+      - name: Run v1.108 dry global-spacing validation
+        run: python 3dprint_black_mirror_wave_grid_v1.108.py --source 3dprintv1.179.py --piece 1-2 --dry-validate
