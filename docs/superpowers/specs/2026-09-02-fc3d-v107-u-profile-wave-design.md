@@ -24,13 +24,17 @@ No global radial approximation and no fixed optical angle may replace this local
 The primitive emitted road is one complete local u-profile, not a constant-height contour:
 
 1. valley lead: `+u`, h=0, nominal XY run 0.100 mm;
-2. optical front: `-u,+h`, total rise 0.250 mm, integrated from the exact local bisecting-normal tilt;
-3. hidden upper/rear slope: `+u,+h`, nominal XY run 0.400 mm, additional rise 0.050 mm;
-4. return: `+u,-h`, descend from h=0.300 to h=0 with nominal return angle retained from the wave experiment unless visibility/closure audit proves invalid.
+2. optical front: `-u,+Z`, total rise 0.250 mm, integrated from the exact local bisecting-normal tilt;
+3. hidden upper/rear slope: `+u,+Z`, nominal XY run 0.400 mm, additional rise 0.050 mm;
+4. return: `+u,-Z`, descend from h=0.300 to h=0 with the retained return-angle concept unless visibility/closure audit proves invalid.
 
-Maximum wave relief is exactly 0.300 mm above the valley. Wave-forming extrusion feed is 50 mm/s (F3000). Extrusion is calculated from intended true 3D segment length.
+Maximum wave relief is exactly 0.300 mm above the valley. Wave-forming extrusion feed is 50 mm/s (F3000). Extrusion is calculated from true 3D segment length.
 
-Because the A1 representation deliberately keeps the logical G1 Z constant, the physical height profile is represented with fine G29.1 offset steps along the u-profile. Direct G1 Z must remain at the single optical logical layer value so Studio/Orca do not fragment the optical layer.
+### Z representation
+
+v1.107 deliberately uses **real coordinated G1 X/Y/Z motion** for the wave. The nozzle must physically climb and descend each u-profile as part of the same motion that travels along local ±u. Do not approximate the wave with fragmented G29.1 height steps.
+
+Orca is the authoritative slicer-preview route for this experiment because it correctly previews these coordinated Z movements without confusing them into spurious logical layers. Existing G29.1 use for the 25% support-valley-fill compensation remains unchanged and is separate from the wave motion.
 
 ## Around-arc sampling and wave sets
 
@@ -57,21 +61,21 @@ Thus road count is constant inside a set and decreases only at complete-set boun
 - pressure-only feed F1800;
 - endpoint trim 0 unless explicitly requested.
 
-One pressure cycle is owned by each complete emitted u-profile road. The dry tail is taken from the final portion of that road without changing its geometry.
+One pressure cycle is owned by each complete emitted u-profile road. The dry tail is taken from the final portion of that road without changing its XYZ geometry.
 
 ## Direction/orientation audit
 
-Every positive-E u-profile segment is audited from its actual emitted XY endpoints against `mirror_frame_global()` at the segment midpoint.
+Every positive-E u-profile segment is audited from its actual emitted XYZ endpoints against `mirror_frame_global()` at the segment midpoint.
 
-- valley lead: dot(direction, +u) positive and near 1; height change approximately zero;
-- optical front: dot(direction, +u) negative and near -1; height increases;
-- hidden top: dot(direction, +u) positive and near 1; height increases only to the 0.300-mm cap;
-- return: dot(direction, +u) positive and near 1; height decreases to valley.
+- valley lead: dot(XY direction, +u) positive and near 1; dZ approximately zero;
+- optical front: dot(XY direction, +u) negative and near -1; dZ positive;
+- hidden top: dot(XY direction, +u) positive and near 1; dZ positive only until the 0.300-mm cap;
+- return: dot(XY direction, +u) positive and near 1; dZ negative back to valley.
 
-The audit must also report alignment with `a_unit`; a build dominated by transverse/tangential extrusion must fail. Optical-front surface-normal error and hidden-surface projector clearance remain independently audited.
+The audit must also report alignment with `a_unit`; a build dominated by transverse/tangential extrusion must fail. Optical-front surface-normal error and hidden-surface projector clearance remain independently audited. G-code audit must prove the emitted wave positive-E moves carry changing Z directly rather than substituting G29.1 stair steps.
 
 ## Version and release contract
 
 The changed wrapper is `3dprint_black_mirror_wave_grid_v1.107.py`. Filename, `SCRIPT_VERSION`, markers, reports, rear version `107`, default output names and sample commands must all say v1.107. v1.106 is only the predecessor/RED reference.
 
-Release requires: source regression, dry validation against real `3dprintv1.179.py`, Orca package generation and independent audit, Studio generation and independent audit, Orca/Studio executable comparison, then human Layer-4 slicer preview. No novel v1.107 geometry is called print-ready before that visual preview.
+Release requires: source regression, dry validation against real `3dprintv1.179.py`, Orca package generation and independent audit, then human Layer-4 Orca preview. Studio may remain a compatibility output if it behaves correctly, but it is not allowed to force the wave back to constant-Z/G29.1 geometry. No novel v1.107 geometry is called print-ready before the Orca visual preview matches the intended inward/outward wave topology.
