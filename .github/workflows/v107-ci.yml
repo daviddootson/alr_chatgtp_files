@@ -1,4 +1,4 @@
-name: FC3D v1.108 global u-profile validation
+name: FC3D v1.109 closed global u-profile validation
 
 on:
   push:
@@ -8,10 +8,12 @@ on:
       - '3dprint_black_mirror_wave_grid_v1.106.py'
       - '3dprint_black_mirror_wave_grid_v1.107.py'
       - '3dprint_black_mirror_wave_grid_v1.108.py'
+      - '3dprint_black_mirror_wave_grid_v1.109.py'
       - '3dprintv1.179.py'
       - 'test_v107_contract.py'
       - 'test_v108_contract.py'
-      - 'independent_v108_audit.py'
+      - 'test_v109_contract.py'
+      - 'independent_v109_audit.py'
       - '.github/workflows/v107-ci.yml'
   workflow_dispatch:
 
@@ -28,13 +30,15 @@ jobs:
           python-version: '3.12'
       - name: Install runtime dependencies
         run: python -m pip install --disable-pip-version-check numpy pillow tifffile
-      - name: Preserve v1.107 regression
+      - name: Preserve previous regressions
         run: |
           python -m py_compile 3dprint_black_mirror_wave_grid_v1.107.py
           python test_v107_contract.py
-      - name: Compile v1.108
-        run: python -m py_compile 3dprint_black_mirror_wave_grid_v1.108.py
-      - name: Run v1.108 source contract
-        run: python test_v108_contract.py
-      - name: Run v1.108 dry global-spacing validation
-        run: python 3dprint_black_mirror_wave_grid_v1.108.py --source 3dprintv1.179.py --piece 1-2 --dry-validate
+          python -m py_compile 3dprint_black_mirror_wave_grid_v1.108.py
+          python test_v108_contract.py
+      - name: Compile v1.109
+        run: python -m py_compile 3dprint_black_mirror_wave_grid_v1.109.py
+      - name: Run v1.109 source contract
+        run: python test_v109_contract.py
+      - name: Run v1.109 dry closed-global validation
+        run: python 3dprint_black_mirror_wave_grid_v1.109.py --source 3dprintv1.179.py --piece 1-2 --dry-validate
