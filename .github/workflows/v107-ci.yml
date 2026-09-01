@@ -7,9 +7,13 @@ on:
     paths:
       - '3dprint_black_mirror_wave_grid_v1.106.py'
       - '3dprint_black_mirror_wave_grid_v1.107.py'
+      - '3dprint_black_mirror_wave_grid_v1.108.py'
       - '3dprintv1.179.py'
       - 'test_v107_contract.py'
+      - 'test_v108_contract.py'
       - 'independent_v107_audit.py'
+      - 'independent_v108_audit.py'
+      - 'diagnose_v107_outer_contour.py'
       - '.github/workflows/v107-ci.yml'
   workflow_dispatch:
 
@@ -30,5 +34,7 @@ jobs:
         run: python -m py_compile 3dprint_black_mirror_wave_grid_v1.107.py
       - name: Run v1.107 source contract
         run: python test_v107_contract.py
+      - name: Probe v1.107 transverse contour spans
+        run: python diagnose_v107_outer_contour.py
       - name: Run v1.107 dry geometry validation
         run: python 3dprint_black_mirror_wave_grid_v1.107.py --source 3dprintv1.179.py --piece 1-2 --dry-validate
