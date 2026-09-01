@@ -15,11 +15,13 @@
 - Never modify or reissue v1.106; changed wrapper is v1.107.
 - `+u = mirror_frame_global(...)["b_unit"]`; optical front is `-u,+Z`; hidden/return are `+u`.
 - Wave peak 0.300 mm = 0.250 optical rise + 0.050 hidden rise.
-- Wave extrusion F3000; E is based on intended 3D segment length.
-- Logical G1 Z stays constant on Layer 4; physical profile height uses G29.1.
-- New set starts at >=0.600 mm centres and as close as possible; same sample count within set; reset only after a complete cell when minimum adjacent spacing reaches ~0.400 mm; next set uses fewer roads.
+- Wave extrusion F3000; E is based on true 3D segment length.
+- **Wave height is emitted as real coordinated G1 X/Y/Z motion.** Do not staircase the wave with G29.1. Existing G29.1 support-fill compensation remains unchanged.
+- Orca is the authoritative preview path for this experiment because it previews the moving-Z wave correctly without confusing the layer structure.
+- Moving Z during the wave is physically accepted by the printer and is required for the optical profile.
+- New set starts at >=0.600 mm centres and as close as possible; same sample count within a set; reset only after a complete cell when minimum adjacent spacing reaches ~0.400 mm; next set uses fewer roads.
 - Preserve 25% valley fill and +0.795/-0.800/0.160 optical pressure mechanics.
-- Human slicer preview is the final print-release gate.
+- Human Orca slicer preview is the final print-release gate.
 
 ---
 
@@ -29,139 +31,81 @@
 - Create: `test_v107_contract.py`
 - Create: `.github/workflows/v107-ci.yml`
 
-**Interfaces:**
-- Consumes predecessor `3dprint_black_mirror_wave_grid_v1.106.py`.
-- Produces a test that requires v1.107 u-profile markers/functions and explicitly identifies the v1.106 full-contour topology as rejected.
-
-- [ ] **Step 1: Write the failing test**
-
-The test must assert that v1.106 contains the rejected `FC3D_V1106_WAVE_ARC` topology, that v1.107 exists, and that v1.107 contains `FC3D_V1107_U_PROFILE_SEG`, a local-u orientation audit, rear version 107, and no active `FC3D_V1106_WAVE_ARC` emission.
-
-- [ ] **Step 2: Run test to verify RED**
-
-Run in Actions: `python test_v107_contract.py`.
-Expected before v1.107 exists: FAIL because `3dprint_black_mirror_wave_grid_v1.107.py` is missing.
-
-- [ ] **Step 3: Commit RED evidence**
-
-Commit test/workflow before production wrapper.
+- [x] **Step 1: Write the failing test**
+- [x] **Step 2: Run test to verify RED** — failed specifically because v1.107 was absent after first verifying exact v1.106 SHA-256.
+- [x] **Step 3: Commit RED evidence before production code**
 
 ### Task 2: Build local-u geometry and wave-set sampler
 
 **Files:**
 - Create: `3dprint_black_mirror_wave_grid_v1.107.py`
 
-**Interfaces:**
-- Consumes v1.106 exact bytes and its `mirror_frame_global`, `integrate_b_front_global`, `_advance_b_rise_global`, `_waveset_outer_reference_curve`, clipping helpers and A1 constants.
-- Produces `generate_u_profile_wave_sets(piece)` containing sets, cells, per-road 3D profiles and spacing reports.
+- [ ] **Step 1: SHA-gate and version-transform predecessor**
 
-- [ ] **Step 1: SHA-gate and version transform predecessor**
+Require SHA-256 `a7e14bf818033aff390f69fd0e27368a8917a8a60dbb9c29c5d1a5c308814e80`, then advance source markers/version/default output/rear text to 107 before runtime execution.
 
-Require SHA-256 `a7e14bf818033aff390f69fd0e27368a8917a8a60dbb9c29c5d1a5c308814e80`, then advance source markers/version/default output/rear text to 107 before injection.
+- [ ] **Step 2: Sample each transverse contour with a fixed road count per set**
 
-- [ ] **Step 2: Add fixed-fraction contour sampling**
+Choose the integer sample count that puts the new set as close as possible to 0.600-mm centres without making it tighter than 0.600 mm. Reuse those normalized transverse positions throughout that set.
 
-Compute contour arclength, choose `intervals=floor(length/0.600)` with at least one interval, and sample normalized fractions `i/intervals`. This guarantees initial spacing is not tighter than 0.600 mm. Reuse the same fractions throughout a set.
+- [ ] **Step 3: Build one complete local-u profile per transverse sample**
 
-- [ ] **Step 3: Build one complete u-profile road at each sampled valley point**
+Each road is: +u valley lead; exact local `-u,+Z` optical climb to +0.250; `+u,+Z` shallow hidden section to +0.300; `+u,-Z` return to valley. Geometry may be locally subdivided to follow the varying true u field, but the emitted motion is genuine XYZ, not height-offset stair stepping.
 
-Use fine local integration: +u low lead; `integrate_b_front_global(...,0.250,0.05)` for exact -u rising front; +u hidden run in <=0.05-mm XY steps while h rises linearly by 0.050; +u return in <=0.05-mm XY steps while h falls to zero. Store role with every segment.
+- [ ] **Step 4: Advance inward and reset only at complete-set boundaries**
 
-- [ ] **Step 4: Advance complete inward cells and apply set reset**
+Keep road count fixed while inward convergence reduces adjacent spacing from about 0.600 toward 0.400 mm. Finish the complete inward cell where zero nominal gap is reached; then begin the next set with fewer roads so its outer/start spacing returns to about 0.600 mm. Never delete a road partway around an arc.
 
-Advance the valley contour by the full local profile endpoint relation. Keep sample fractions unchanged until minimum adjacent sample spacing on the new valley contour <=0.402 mm. Finish that full cell, then recompute a lower interval count at the new contour to restore >=0.600 mm start spacing.
+- [ ] **Step 5: Geometry self-checks**
 
-- [ ] **Step 5: Run geometry self-checks**
+Require non-empty geometry, peak <=0.3000001, correct u signs, start spacing >=0.600-tolerance, convergence toward 0.400, and decreasing road count at convergence resets.
 
-Require nonempty sets, decreasing road count at every convergence reset, peak <=0.3000001, set-start min spacing >=0.600-tolerance, and set-end spacing <=0.402 for every zero-gap reset.
+### Task 3: Emit corrected wave roads
 
-### Task 3: Emit the corrected Layer-4 roads
+- [ ] **Step 1: One pressure cycle per complete u-profile**
 
-**Files:**
-- Modify through injected overrides in `3dprint_black_mirror_wave_grid_v1.107.py`.
+Travel to road start, +0.795 reprime, emit profile at F3000, -0.800 retract before final 0.160-mm moving dry tail, then safe travel.
 
-**Interfaces:**
-- Consumes `generate_u_profile_wave_sets(piece)`.
-- Produces `_explicit_mirror_wave_layer_gcode` replacement with `FC3D_V1107_U_PROFILE_*` markers.
+- [ ] **Step 2: Direct XYZ wave motion**
 
-- [ ] **Step 1: Emit one pressure cycle per complete u-profile**
+Every positive-E wave segment carries X/Y/Z. Optical front: `-u,+Z`; hidden top: `+u,+Z`; return: `+u,-Z`; lead: `+u` at valley Z. Extrusion uses sqrt(dx^2+dy^2+dz^2).
 
-Travel safely, set starting G29.1, move to start, reprime +0.795, emit all profile segments at F3000, retract -0.800 before the final 0.160-mm moving dry tail, then safe travel.
+- [ ] **Step 3: Preserve non-wave mechanics**
 
-- [ ] **Step 2: Carry profile height through fine G29.1 changes**
+Do not change base/support, 25% filler, startup, package metadata, rear text placement, arrow-only flip or finish-tail architecture except revision labels and true peak accounting.
 
-Before each fine XY extrusion segment, set G29.1 to the segment endpoint physical height while retaining constant logical G1 Z. Marker records role, start/end physical h, intended 3D length and E.
-
-- [ ] **Step 3: Preserve all non-wave Layer-4/base mechanics**
-
-Do not change support, 25% filler, startup, package metadata, rear text placement, arrow transform or finish-tail architecture except version labels and physical-peak accounting.
-
-### Task 4: Direction and spacing audits
+### Task 4: Direction, direct-Z and spacing audits
 
 **Files:**
-- Add overrides/functions in `3dprint_black_mirror_wave_grid_v1.107.py`.
-- Create: `independent_v107_audit.py`.
+- Create: `independent_v107_audit.py`
 
-**Interfaces:**
-- Consumes generated `.gcode.3mf` plus geometric report.
-- Produces fail-closed audit results for local-u direction, spacing, pressure, Z representation and package contract.
+- [ ] **Step 1: Audit actual emitted positive-E segments against local u/a**
 
-- [ ] **Step 1: Audit every emitted positive-E segment**
+At each segment midpoint require optical-front dot-u negative and near -1; lead/hidden/return dot-u positive and near +1; tangential dominance must fail.
 
-At the XY midpoint compute `u=b_unit` and `a=a_unit`. Require optical-front dot-u < -cos(3°), hidden/return/lead dot-u > cos(3°), expected physical-h sign, and tangential dominance absent.
+- [ ] **Step 2: Audit direct moving Z**
 
-- [ ] **Step 2: Audit set packing**
+Require positive-E wave moves to carry direct Z changes with the expected sign. Fail if the wave is synthesized through G29.1 height fragments.
 
-Require start spacing near/above 0.600, monotonic convergence within each set, complete-cell reset only, and lower road count after each convergence reset.
+- [ ] **Step 3: Audit wave-set packing**
 
-- [ ] **Step 3: Audit preserved release contract**
+Require ~0.600-mm start centres, inward convergence, zero-gap threshold around 0.400 mm, complete-set reset only, and fewer roads after reset.
 
-ZIP test, MD5 sidecar, four logical layers, A1 Mini/external black PETG/no AMS, startup thermal order, no tower/H2C/Vortek executable content, pressure sequence, peak/finish clearance and rear `107`/arrow-only transform.
+- [ ] **Step 4: Preserve package/release audits**
 
-### Task 5: GREEN dry/full generation and target comparison
+ZIP/MD5, A1 Mini black Generic PETG external spool/no AMS, startup thermal order, no tower/H2C/Vortek executable remnants, pressure sequence, true peak/finish clearance, rear `107` and arrow-only transform.
 
-**Files:**
-- Update: `.github/workflows/v107-ci.yml`
+### Task 5: GREEN dry/full Orca generation
 
-**Interfaces:**
-- Produces Orca and Studio v1.107 packages plus audit JSON/log artifacts.
+- [ ] `python test_v107_contract.py`
+- [ ] `python 3dprint_black_mirror_wave_grid_v1.107.py --source 3dprintv1.179.py --piece 1-2 --dry-validate`
+- [ ] `python 3dprint_black_mirror_wave_grid_v1.107.py --source 3dprintv1.179.py --piece 1-2 --slicer-target orca --output black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.107.gcode.3mf`
+- [ ] `python independent_v107_audit.py black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.107.gcode.3mf`
+- [ ] Upload candidate package and audit reports as Actions artifacts.
 
-- [ ] **Step 1: Run source regression**
-
-`python test_v107_contract.py` must PASS.
-
-- [ ] **Step 2: Run dry validation**
-
-`python 3dprint_black_mirror_wave_grid_v1.107.py --source 3dprintv1.179.py --piece 1-2 --dry-validate`
-
-- [ ] **Step 3: Generate Orca package**
-
-`python 3dprint_black_mirror_wave_grid_v1.107.py --source 3dprintv1.179.py --piece 1-2 --slicer-target orca --output black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.107.gcode.3mf`
-
-- [ ] **Step 4: Independently audit Orca package**
-
-`python independent_v107_audit.py black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.107.gcode.3mf`
-
-- [ ] **Step 5: Generate and audit Studio package**
-
-Use the same command with `--slicer-target studio` and `_studio` output suffix; run the same independent audit.
-
-- [ ] **Step 6: Compare executable G-code**
-
-Normalize only the producer/header metadata expected to differ; otherwise require the executable model stream to match.
-
-- [ ] **Step 7: Upload both packages and audit reports as Actions artifacts**
-
-These remain candidates pending human Layer-4 slicer preview.
+Studio compatibility may be checked afterward, but it must not constrain the geometry back to constant-Z. Orca is the authoritative preview route for v1.107.
 
 ### Task 6: Human release gate
 
-**Files:** none.
-
-- [ ] **Step 1: Inspect Layer 4 in Orca/Bambu Studio**
-
-Confirm the roads visibly run inward/outward in local-u sawtooth profiles rather than as five long constant-height arcs; confirm no missing large regions.
-
-- [ ] **Step 2: Only then mark v1.107 print candidate**
-
-If preview disagrees with the intended topology, reject the candidate even if all numerical audits pass.
+- [ ] Inspect Layer 4 in Orca and confirm the actual roads visibly run inward/outward as local-u sawtooth profiles rather than as a handful of constant-height arcs.
+- [ ] Only after that preview agrees with the intended topology may v1.107 be considered a print candidate.
