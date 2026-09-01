@@ -1,0 +1,29 @@
+name: FC3D v1.107 u-profile validation
+
+on:
+  push:
+    branches:
+      - fc3d-v1.107-correct-u-profile
+    paths:
+      - '3dprint_black_mirror_wave_grid_v1.106.py'
+      - '3dprint_black_mirror_wave_grid_v1.107.py'
+      - 'test_v107_contract.py'
+      - 'independent_v107_audit.py'
+      - '.github/workflows/v107-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy pillow
+      - name: Run v1.107 source contract
+        run: python test_v107_contract.py
