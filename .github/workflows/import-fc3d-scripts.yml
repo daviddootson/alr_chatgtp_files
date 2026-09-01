@@ -1,0 +1,46 @@
+name: Import FC3D script archive
+
+on:
+  push:
+    paths:
+      - 'fc3d-script-upload/**'
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check ready marker
+        id: ready
+        shell: bash
+        run: |
+          if [[ -f fc3d-script-upload/READY ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Reconstruct and commit wrappers
+        if: steps.ready.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat fc3d-script-upload/part_* > /tmp/fc3d_wrappers.tar.xz.b64
+          base64 -d /tmp/fc3d_wrappers.tar.xz.b64 > /tmp/fc3d_wrappers.tar.xz
+          echo "7b72a6dd95cfaa07e7b22796f91ff8b3210d5e2e5bcd6190dad48cc5a1adee42  /tmp/fc3d_wrappers.tar.xz" | sha256sum -c -
+          mkdir -p /tmp/fc3d_wrappers
+          tar -xJf /tmp/fc3d_wrappers.tar.xz -C /tmp/fc3d_wrappers
+          cp -f /tmp/fc3d_wrappers/3dprint_black_mirror_wave_grid_v1.*.py .
+          cp -f /tmp/fc3d_wrappers/FC3D_SCRIPT_ARCHIVE_STATUS_2026-09-01.md .
+          rm -rf fc3d-script-upload
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Archive recovered FC3D wrapper scripts"
+          git push
