@@ -1,4 +1,4 @@
-name: FC3D v1.110 sparse global u-profile validation
+name: FC3D v1.110 Orca candidate validation
 
 on:
   push:
@@ -23,7 +23,7 @@ permissions:
   contents: read
 
 jobs:
-  contract:
+  orca-candidate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,14 +32,29 @@ jobs:
           python-version: '3.12'
       - name: Install runtime dependencies
         run: python -m pip install --disable-pip-version-check numpy pillow tifffile
-      - name: Preserve previous source regressions
+      - name: Preserve source regressions and compile
         run: |
           python test_v107_contract.py
           python test_v108_contract.py
           python test_v109_contract.py
-      - name: Compile v1.110
-        run: python -m py_compile 3dprint_black_mirror_wave_grid_v1.110.py
-      - name: Run v1.110 source contract
-        run: python test_v110_contract.py
-      - name: Run v1.110 dry sparse-global validation
+          python test_v110_contract.py
+          python -m py_compile 3dprint_black_mirror_wave_grid_v1.110.py independent_v110_audit.py
+      - name: Dry validate v1.110
         run: python 3dprint_black_mirror_wave_grid_v1.110.py --source 3dprintv1.179.py --piece 1-2 --dry-validate
+      - name: Generate Orca v1.110 package
+        run: python 3dprint_black_mirror_wave_grid_v1.110.py --source 3dprintv1.179.py --piece 1-2 --slicer-target orca --output black_a_only_sparse_global_u_profile_wave_sets_valleyfill25_1_2_v1.110.gcode.3mf
+      - name: Independent direct-XYZ package audit
+        run: python independent_v110_audit.py black_a_only_sparse_global_u_profile_wave_sets_valleyfill25_1_2_v1.110.gcode.3mf | tee independent_v110_audit.json
+      - name: Candidate hashes
+        run: |
+          sha256sum 3dprint_black_mirror_wave_grid_v1.110.py black_a_only_sparse_global_u_profile_wave_sets_valleyfill25_1_2_v1.110.gcode.3mf | tee v110_sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fc3d-v1.110-orca-candidate
+          if-no-files-found: error
+          path: |
+            3dprint_black_mirror_wave_grid_v1.110.py
+            black_a_only_sparse_global_u_profile_wave_sets_valleyfill25_1_2_v1.110.gcode.3mf
+            black_a_only_sparse_global_u_profile_wave_sets_valleyfill25_1_2_v1.110.gcode.3mf.*.csv
+            independent_v110_audit.json
+            v110_sha256.txt
