@@ -1,4 +1,4 @@
-name: FC3D v1.112 release dry validation
+name: FC3D v1.113 release validation
 
 on:
   push:
@@ -10,12 +10,11 @@ on:
       - '3dprint_black_mirror_wave_grid_v1.108.py'
       - '3dprint_black_mirror_wave_grid_v1.109.py'
       - '3dprint_black_mirror_wave_grid_v1.110.py'
-      - '3dprint_black_mirror_wave_grid_v1.111.py'
-      - '3dprint_black_mirror_wave_grid_v1.112.py'
+      - '3dprint_black_mirror_wave_grid_v1.113.py'
       - '3dprintv1.179.py'
       - 'test_v110_contract.py'
-      - 'test_v111_contract.py'
-      - 'test_v112_contract.py'
+      - 'test_v113_contract.py'
+      - 'independent_v110_audit.py'
       - '.github/workflows/v107-ci.yml'
   workflow_dispatch:
 
@@ -23,7 +22,7 @@ permissions:
   contents: read
 
 jobs:
-  release-dry:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,11 +33,12 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy pillow tifffile
       - name: Source contract and compile
         run: |
-          python test_v112_contract.py
-          python -m py_compile 3dprint_black_mirror_wave_grid_v1.112.py
-      - name: Dry validate v1.112 release wrapper
+          python test_v110_contract.py
+          python test_v113_contract.py
+          python -m py_compile 3dprint_black_mirror_wave_grid_v1.113.py
+      - name: Dry validate v1.113 release wrapper
         run: |
-          python 3dprint_black_mirror_wave_grid_v1.112.py --source 3dprintv1.179.py --piece 1-2 --dry-validate | tee v112_dry.log
-          ! grep -F 'DRY V1.106 VALIDATION' v112_dry.log
-          grep -F 'DRY V1.112 VALIDATION' v112_dry.log
-          grep -F 'v1.112 geometry fingerprint  : PASS' v112_dry.log
+          python 3dprint_black_mirror_wave_grid_v1.113.py --source 3dprintv1.179.py --piece 1-2 --dry-validate | tee v113_dry.log
+          ! grep -F 'DRY V1.106 VALIDATION' v113_dry.log
+          grep -F 'DRY V1.113 VALIDATION' v113_dry.log
+          grep -F 'v1.113 geometry fingerprint  : PASS' v113_dry.log
