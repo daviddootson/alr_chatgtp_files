@@ -48,12 +48,37 @@ jobs:
       - name: Independent direct-XYZ package audit
         run: |
           python independent_v113_audit.py black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf | tee v113_package_audit.json
+      - name: Clean-directory exact-command release test
+        run: |
+          rm -rf /tmp/fc3d-v113-release
+          mkdir -p /tmp/fc3d-v113-release
+          cp 3dprint_black_mirror_wave_grid_v1.106.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.107.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.108.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.109.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.110.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.113.py /tmp/fc3d-v113-release/
+          cp 3dprintv1.179.py /tmp/fc3d-v113-release/
+          cd /tmp/fc3d-v113-release
+          python 3dprint_black_mirror_wave_grid_v1.113.py --source 3dprintv1.179.py --piece 1-2 --slicer-target orca --output black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+          test -s black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+          zip -9 fc3d-v1.113-clean-release.zip \
+            3dprint_black_mirror_wave_grid_v1.106.py \
+            3dprint_black_mirror_wave_grid_v1.107.py \
+            3dprint_black_mirror_wave_grid_v1.108.py \
+            3dprint_black_mirror_wave_grid_v1.109.py \
+            3dprint_black_mirror_wave_grid_v1.110.py \
+            3dprint_black_mirror_wave_grid_v1.113.py \
+            3dprintv1.179.py \
+            black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+          cp fc3d-v1.113-clean-release.zip "$GITHUB_WORKSPACE/"
       - name: Candidate hashes
-        run: sha256sum 3dprint_black_mirror_wave_grid_v1.113.py black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+        run: sha256sum 3dprint_black_mirror_wave_grid_v1.113.py black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf fc3d-v1.113-clean-release.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: fc3d-v1.113-orca-candidate
+          name: fc3d-v1.113-clean-release
           path: |
+            fc3d-v1.113-clean-release.zip
             black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
             v113_dry.log
             v113_package_audit.json
