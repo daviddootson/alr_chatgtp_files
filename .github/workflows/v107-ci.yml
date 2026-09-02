@@ -1,4 +1,4 @@
-name: FC3D v1.111 release dry validation
+name: FC3D v1.112 release dry validation
 
 on:
   push:
@@ -11,13 +11,11 @@ on:
       - '3dprint_black_mirror_wave_grid_v1.109.py'
       - '3dprint_black_mirror_wave_grid_v1.110.py'
       - '3dprint_black_mirror_wave_grid_v1.111.py'
+      - '3dprint_black_mirror_wave_grid_v1.112.py'
       - '3dprintv1.179.py'
-      - 'test_v107_contract.py'
-      - 'test_v108_contract.py'
-      - 'test_v109_contract.py'
       - 'test_v110_contract.py'
       - 'test_v111_contract.py'
-      - 'independent_v110_audit.py'
+      - 'test_v112_contract.py'
       - '.github/workflows/v107-ci.yml'
   workflow_dispatch:
 
@@ -34,14 +32,13 @@ jobs:
           python-version: '3.12'
       - name: Install runtime dependencies
         run: python -m pip install --disable-pip-version-check numpy pillow tifffile
-      - name: Source contracts and compile
+      - name: Source contract and compile
         run: |
-          python test_v110_contract.py
-          python test_v111_contract.py
-          python -m py_compile 3dprint_black_mirror_wave_grid_v1.111.py
-      - name: Dry validate v1.111 release wrapper
+          python test_v112_contract.py
+          python -m py_compile 3dprint_black_mirror_wave_grid_v1.112.py
+      - name: Dry validate v1.112 release wrapper
         run: |
-          python 3dprint_black_mirror_wave_grid_v1.111.py --source 3dprintv1.179.py --piece 1-2 --dry-validate | tee v111_dry.log
-          ! grep -F 'DRY V1.106 VALIDATION' v111_dry.log
-          grep -F 'DRY V1.111 VALIDATION' v111_dry.log
-          grep -F 'v1.111 geometry fingerprint  : PASS' v111_dry.log
+          python 3dprint_black_mirror_wave_grid_v1.112.py --source 3dprintv1.179.py --piece 1-2 --dry-validate | tee v112_dry.log
+          ! grep -F 'DRY V1.106 VALIDATION' v112_dry.log
+          grep -F 'DRY V1.112 VALIDATION' v112_dry.log
+          grep -F 'v1.112 geometry fingerprint  : PASS' v112_dry.log
