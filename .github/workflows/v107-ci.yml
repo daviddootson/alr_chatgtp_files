@@ -1,0 +1,84 @@
+name: FC3D v1.113 release validation
+
+on:
+  push:
+    branches:
+      - fc3d-v1.107-correct-u-profile
+    paths:
+      - '3dprint_black_mirror_wave_grid_v1.106.py'
+      - '3dprint_black_mirror_wave_grid_v1.107.py'
+      - '3dprint_black_mirror_wave_grid_v1.108.py'
+      - '3dprint_black_mirror_wave_grid_v1.109.py'
+      - '3dprint_black_mirror_wave_grid_v1.110.py'
+      - '3dprint_black_mirror_wave_grid_v1.113.py'
+      - '3dprintv1.179.py'
+      - 'test_v110_contract.py'
+      - 'test_v113_contract.py'
+      - 'independent_v113_audit.py'
+      - '.github/workflows/v107-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy pillow tifffile
+      - name: Source contract and compile
+        run: |
+          python test_v110_contract.py
+          python test_v113_contract.py
+          python -m py_compile 3dprint_black_mirror_wave_grid_v1.113.py independent_v113_audit.py
+      - name: Dry validate v1.113 release wrapper
+        run: |
+          python 3dprint_black_mirror_wave_grid_v1.113.py --source 3dprintv1.179.py --piece 1-2 --dry-validate | tee v113_dry.log
+          ! grep -F 'DRY V1.106 VALIDATION' v113_dry.log
+          grep -F 'DRY V1.113 VALIDATION' v113_dry.log
+          grep -F 'v1.113 geometry fingerprint  : PASS' v113_dry.log
+      - name: Generate Orca v1.113 package
+        run: |
+          python 3dprint_black_mirror_wave_grid_v1.113.py --source 3dprintv1.179.py --piece 1-2 --slicer-target orca --output black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+      - name: Independent direct-XYZ package audit
+        run: |
+          python independent_v113_audit.py black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf | tee v113_package_audit.json
+      - name: Clean-directory exact-command release test
+        run: |
+          rm -rf /tmp/fc3d-v113-release
+          mkdir -p /tmp/fc3d-v113-release
+          cp 3dprint_black_mirror_wave_grid_v1.106.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.107.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.108.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.109.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.110.py /tmp/fc3d-v113-release/
+          cp 3dprint_black_mirror_wave_grid_v1.113.py /tmp/fc3d-v113-release/
+          cp 3dprintv1.179.py /tmp/fc3d-v113-release/
+          cd /tmp/fc3d-v113-release
+          python 3dprint_black_mirror_wave_grid_v1.113.py --source 3dprintv1.179.py --piece 1-2 --slicer-target orca --output black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+          test -s black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+          zip -9 fc3d-v1.113-clean-release.zip \
+            3dprint_black_mirror_wave_grid_v1.106.py \
+            3dprint_black_mirror_wave_grid_v1.107.py \
+            3dprint_black_mirror_wave_grid_v1.108.py \
+            3dprint_black_mirror_wave_grid_v1.109.py \
+            3dprint_black_mirror_wave_grid_v1.110.py \
+            3dprint_black_mirror_wave_grid_v1.113.py \
+            3dprintv1.179.py \
+            black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+          cp fc3d-v1.113-clean-release.zip "$GITHUB_WORKSPACE/"
+      - name: Candidate hashes
+        run: sha256sum 3dprint_black_mirror_wave_grid_v1.113.py black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf fc3d-v1.113-clean-release.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fc3d-v1.113-clean-release
+          path: |
+            fc3d-v1.113-clean-release.zip
+            black_a_only_u_profile_wave_sets_valleyfill25_1_2_v1.113.gcode.3mf
+            v113_dry.log
+            v113_package_audit.json
