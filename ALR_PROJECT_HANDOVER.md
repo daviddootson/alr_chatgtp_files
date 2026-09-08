@@ -10,13 +10,29 @@ v1.157 must not be used for printing thin-cap output: direct audit of a generate
 
 The original practical thin-cap candidate was **WWK / W0.22 / K0.10 / S1.2 / V50 / H0**, predicted at about B/A/C 134.8/134.0/100.6, pitch ~1.676 mm, viewer dark band ~1.216 mm against the current PETG KWK/v156 baseline. These are model predictions, not physical measurements.
 
-A fresh high-resolution trade study found two more attractive contrast-oriented operating points:
+A high-resolution trade study found two more contrast-oriented operating points:
 
 - **~115 brightness trade:** WWK / W0.24 / K0.165 / S1.2 / V75 / H0, with +0.050 mm pitch above the local auto-visibility solve: B/A/C **114.816 / 103.428 / 111.011**, mean pitch **2.178650 mm**, mean viewer dark band **1.651705 mm**.
 - **Ambient-matched:** WWK / W0.24 / K0.213 / S1.2 / V80 / H0, automatic spacing: B/A/C **111.120 / 100.009 / 111.111**, mean pitch **2.313729 mm**, mean viewer dark band **1.771262 mm**.
 - Nearby lower-shadow ambient-matched variant: W0.24 / K0.205 / V75 / +0.025 mm pitch: B/A/C **110.520 / 99.908 / 110.621**, pitch **2.254842 mm**, dark band **1.728373 mm**.
 
-Within the tested thin-cap WWK space, B~115 requires roughly A~103-104; holding ambient at A~100 limits brightness to roughly B~110.5-111.1 while still giving C~110.6-111.1.
+### Darkest-ambient search v1.2
+
+A broad follow-up search minimized uniform ambient subject to **brightness >=105%**. H0 was fixed. Several thousand coarse cases were screened across W dose, K-cap dose, physical height scale, visibility and spacing; promising regions were refined across the full 3x3 piece-1-2 sample and three viewer offsets. Final candidates were checked at 1024 viewer rays, 96 bead segments and 512 ambient directions.
+
+The best **directly printable with normal automatic v158 spacing** found was:
+
+- **WWK / W0.200 / K0.115 / S1.68 / V75 / H0**
+- B/A/C **105.455 / 81.088 / 130.049**
+- mean pitch **2.262364 mm**
+- mean viewer dark band **1.789348 mm**
+- physical W height **0.3360 mm** each; physical K-cap height **0.1932 mm**
+
+Relative to the current PETG KWK/v156 reference, this predicts roughly **+5.45% useful brightness, -18.91% uniform ambient pickup and +30.05% contrast index**. The cost is a much wider pitch/viewer dark band. S1.68 is also substantially taller than the established S1.2 baseline, so printability and shape fidelity remain a physical-test question.
+
+A nearby slightly smaller-shadow alternative is **W0.200 / K0.120 / S1.67 / V72 / H0**, predicting B/A/C **105.699 / 81.569 / 129.582**, pitch **2.241735 mm**, dark band **1.773366 mm**.
+
+The detailed result is archived in `studies/ALR_thincap_wwk_v1.0/dark_ambient_search_v1.2.md` and selected final points in `dark_ambient_selected_v1.2.csv`.
 
 Retain the v155/v156 mapped-white visibility spacing mathematics. Do not revert the production converter to the v154 whole-profile law solely to recover the historical 102.3 prediction.
 
@@ -46,7 +62,8 @@ Study: `ALR_compact_kkwwk_v1.0`.
 Study: `ALR_thincap_wwk_v1.0`.
 - Keeps two W tiers full height while reducing only final K cap.
 - K~0.10 gives a strong brightness/shadow trade versus full-height WWK.
-- Follow-up `brightness_contrast_trade_v1.1.md` records the fresh B~115 and A~100 Pareto points above.
+- `brightness_contrast_trade_v1.1.md` records B~115 and A~100 trade points.
+- `dark_ambient_search_v1.2.md` records the broad brightness>=105 ambient-minimization search and final directly-printable auto-spacing candidates.
 
 ## Repository workflow requested by the user
 
