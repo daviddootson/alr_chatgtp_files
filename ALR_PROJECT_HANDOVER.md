@@ -24,6 +24,8 @@ Archive status at this handover commit: the ZIP has been verified as readable in
 
 ## Repository workflow requested by the user
 
+The standing completion and publication rules are in `AGENTS.md`. Always publish finished work without waiting for a separate reminder. Do not upload or commit any file over 50 MB (50,000,000 bytes per file). Check actual file sizes first; list oversized exclusions, their sizes and regeneration instructions in the checkpoint manifest or handover. Do not bypass this limit through splitting, encoding, archives or Git LFS without explicit user permission.
+
 Carry out investigation, calculations, development and testing in the local working environment. Do not use GitHub as the scratch workspace while solving a problem.
 
 After a piece of work is finished, commit its completed scripts, inputs, output data, reports, tests and verification records to this repository. Include the exact settings, reproducible run commands, dependencies and a handover explaining the conclusions, limitations, current decision and remaining work. Preserve earlier checkpoints rather than overwriting their meaning.
@@ -34,6 +36,6 @@ Before reporting an upload as complete, verify the saved commit and repository c
 
 ## Starting a new conversation
 
-Read this handover and the relevant completed checkpoint files before continuing the work. Fetch the actual scripts and data required for any calculation. Treat old conversation summaries as context, not substitutes for executable inputs or verified numerical results.
+Read `AGENTS.md`, this handover and the relevant completed checkpoint files before continuing the work. Fetch the actual scripts and data required for any calculation. Treat old conversation summaries as context, not substitutes for executable inputs or verified numerical results.
 
 The user's established repository for this project is `daviddootson/alr_chatgtp_files`. The latest converter named in this decision is `3dprint_black_mirror_wave_grid_v1.156.py`, with canonical emitter `3dprintv1.179.py`.
