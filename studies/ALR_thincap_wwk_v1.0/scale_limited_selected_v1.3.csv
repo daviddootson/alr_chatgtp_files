@@ -1,0 +1,5 @@
+label,w_dose_mm,k_cap_mm,physical_scale,visibility_percent,horizontal_percent,brightness_index,ambient_index,contrast_index,mean_pitch_mm,mean_viewer_dark_band_mm,total_optical_height_mm
+failed_s167_target,0.2000,0.120,1.67,72,0,105.699254,81.569086,129.582492,2.241735,1.773366,0.8684
+recommended_clean,0.2400,0.160,1.30,77,0,106.009976,90.408194,117.257045,2.240781,1.740621,0.8320
+darkest_b105,0.2355,0.195,1.30,77,0,105.037801,90.114190,116.560779,2.318747,1.806869,0.8658
+safer_margin,0.2360,0.190,1.30,77,0,105.319844,90.265369,116.678017,2.308224,1.797514,0.8606
