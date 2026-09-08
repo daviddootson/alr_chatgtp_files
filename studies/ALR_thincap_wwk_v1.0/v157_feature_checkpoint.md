@@ -12,6 +12,6 @@ py 3dprint_black_mirror_wave_grid_v1.157.py --source 3dprintv1.179.py --piece 1-
 
 Expected tier physical heights for this command: W=0.264 mm, W=0.264 mm, K=0.120 mm; support top Z above a 0.400-mm base is 1.048 mm. The earlier local optical study predicted this W0.22/K0.10/V50 family at about 1.676-mm pitch, ~1.216-mm viewer dark band, ~134.8 brightness index and ~100.6 contrast index against the current PETG KWK/v156 baseline. Those remain model predictions, not physical measurements.
 
-Local verification before publication: 8 pytest checks passed; Python compilation passed. SHA-256 of the published converter source prepared locally: `0ff1695ea07c4f2152eab2c83675ebe22d36e726a6b52078118a4f0d3f9e2e3f`. No published file exceeds 50 MB.
+Local verification before publication: 8 pytest checks passed; Python compilation passed. The remote converter was fetched back and its Git blob SHA matched the locally verified canonical copy. Canonical converter SHA-256: `22e1b5d54b8c3dc6dd53ce8ceba0e628b3a835deda2ea263f6f0cd382218be7c`. No published file exceeds 50 MB.
 
 Important dependency: v1.157 is a bounded compatibility wrapper and requires `3dprint_black_mirror_wave_grid_v1.156.py` beside it. v1.156 remains unchanged.
