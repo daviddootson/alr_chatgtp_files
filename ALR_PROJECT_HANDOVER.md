@@ -24,7 +24,7 @@ Retain the v155/v156 mapped-white visibility spacing mathematics. Do not revert 
 
 The reduced cap is represented in projector blocker geometry, cap draw extrusion, support top Z, travel height, colour-change tower schedule, rear marking, output naming and audit metadata. The cap base/XY registration is unchanged, so the lower W tiers remain exactly on the established v1.156 geometry.
 
-Local verification before publication: 8 pytest checks passed and Python compilation passed. Converter source SHA-256: `0ff1695ea07c4f2152eab2c83675ebe22d36e726a6b52078118a4f0d3f9e2e3f`. Test source SHA-256 after repository-relative path cleanup: `c27eb1655a803b9ee1f0a53047ac39ea42cc7efbf5511caa3bc6289414070e18`.
+Local verification before publication: 8 pytest checks passed and Python compilation passed. The committed converter was fetched back and its Git blob SHA matched the locally verified canonical copy. Canonical converter SHA-256: `22e1b5d54b8c3dc6dd53ce8ceba0e628b3a835deda2ea263f6f0cd382218be7c`.
 
 The implementation source, tests and checkpoint note have been published to the repository. Full generated G-code/3MF integration still requires running the converter with the local v1.156 and canonical `3dprintv1.179.py`; no print result has yet been measured for v1.157.
 
