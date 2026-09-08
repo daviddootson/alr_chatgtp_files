@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "cases": [
+    {"id":"A4","layer_map":"KKWWK","profile":"standard54321","layer_height_mm":0.22,"physical_height_scale":1.2,"visibility_percent":40,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"standard_low_visibility_control"},
+    {"id":"A5","layer_map":"KKWWK","profile":"standard54321","layer_height_mm":0.22,"physical_height_scale":1.2,"visibility_percent":35,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"standard_low_visibility_control"},
+    {"id":"A6","layer_map":"KKWWK","profile":"standard54321","layer_height_mm":0.22,"physical_height_scale":1.2,"visibility_percent":25,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"standard_floor_control"},
+    {"id":"G01","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.205,"physical_height_scale":1.2,"visibility_percent":50,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto_plus","role":"spacing_tradeoff","pitch_offset_mm":0.05},
+    {"id":"G02","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.205,"physical_height_scale":1.2,"visibility_percent":50,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto_plus","role":"spacing_tradeoff","pitch_offset_mm":0.1},
+    {"id":"G03","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.205,"physical_height_scale":1.2,"visibility_percent":52.5,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"G04","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.2075,"physical_height_scale":1.2,"visibility_percent":50,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"G05","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.2125,"physical_height_scale":1.2,"visibility_percent":45,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"H01","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.2,"physical_height_scale":1.2,"visibility_percent":55,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"H02","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.2,"physical_height_scale":1.2,"visibility_percent":60,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"H03","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.195,"physical_height_scale":1.2,"visibility_percent":55,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"H04","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.195,"physical_height_scale":1.2,"visibility_percent":60,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"H05","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.205,"physical_height_scale":1.2,"visibility_percent":55,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"},
+    {"id":"H06","layer_map":"KKWWK","profile":"compact33321","layer_height_mm":0.19,"physical_height_scale":1.2,"visibility_percent":60,"horizontal_percent":0,"minimum_pitch_mm":0,"piece":"1-2","spacing_mode":"auto","role":"final_refinement"}
+  ]
+}
