@@ -1,0 +1,5 @@
+label,w_dose_mm,k_cap_mm,physical_scale,visibility_percent,horizontal_percent,pitch_mode,brightness_index,ambient_index,contrast_index,mean_pitch_mm,mean_viewer_dark_band_mm
+best_darkest_auto,0.200,0.115,1.68,75,0,automatic,105.45493697,81.08841339,130.04932834,2.2623640069,1.7893480675
+nearby_v75p5,0.200,0.115,1.68,75.5,0,automatic,105.4339,81.0858,130.0275,2.2660,1.7920
+smaller_shadow_auto,0.200,0.120,1.67,72,0,automatic,105.69925408,81.56908581,129.58249198,2.2417350283,1.7733661911
+lower_scale_auto,0.205,0.125,1.62,76,0,automatic,105.20146729,81.90820413,128.43825404,2.2793269311,1.79907
