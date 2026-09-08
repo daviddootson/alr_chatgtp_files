@@ -1,0 +1,12 @@
+{
+  "study": "ALR_thincap_wwk_v1.0",
+  "status": "analysis-only complete",
+  "reference": "PETG KWK L0.20 S1.2 V70 H0 piece 1-2 using v156 reconstructed mapped-white spacing",
+  "printer_output_generated": false,
+  "per_file_limit_bytes": 50000000,
+  "notes": [
+    "Two W tiers retain normal WWK geometry; only the top K cap height varies.",
+    "Central PETG material priors inherited from material model v1.2.",
+    "No file over 50 MB is included."
+  ]
+}
