@@ -1,66 +1,128 @@
 # ALR project handover
 
-Updated: 8 September 2026.
+Updated: 9 September 2026.
 
-## Latest agreed direction
+## Current converter
 
-The latest printer-facing converter is `3dprint_black_mirror_wave_grid_v1.158.py`. It wraps v1.157/v1.156 and retains the adjustable `--cap-height-mm` for the final/top K tier.
+The latest printer-facing converter is **`3dprint_black_mirror_wave_grid_v1.159.py`**. It is a complete standalone converter revision committed directly on `main`; it does not load or patch v156/v157/v158 at runtime. Its only separate project Python source dependency is canonical `3dprintv1.179.py` selected with `--source`.
 
-v1.157 must not be used for printing thin-cap output: direct audit of a generated WWK package found that its tier-3 marker/descent moved to the intended thin-cap top Z while the executable SUPPORT_SEG and SUPPORT_DRY_TAIL Z words remained at the old full-height v1.156 top. v1.158 corrects those executable coordinates and adds a fail-closed actual-G-code tier-Z/cap-dose audit.
+v159 source SHA-256: `f73b1a7f10fc97c1f9fb9112bb7ab38c0fcfa4cc73da91899df820cda66fd57a`.
 
-The user physically tested the tall S1.67 thin-cap direction and reported unacceptable print quality. Treat **S1.30 as the current upper limit for physical-height scale** unless later physical evidence supports going higher.
+Do not use v157 for thin-cap printing. v158 fixed its executable cap-Z error; v159 consolidates the established v158 behaviour into a readable standalone source.
 
-The current recommended scale-limited test is **WWK / W0.24 / K0.16 / S1.30 / V77 / H0**, using normal automatic v158 spacing. Fresh 1024-ray verification predicts B/A/C **106.010 / 90.408 / 117.257**, mean pitch **2.240781 mm**, mean viewer dark band **1.740621 mm**, total optical height **0.8320 mm**, W physical height **0.3120 mm each** and K-cap physical height **0.2080 mm**. These are model predictions, not physical measurements.
+Standing source-history rule: every finished new script revision must be committed **in full as a normal directly accessible source file**. Transport payloads, patches, archives, reconstruction mechanisms and workflow artifacts do not count as the finished revision.
 
-This scale-limited point nearly reproduces the failed S1.67 card's predicted brightness and pitch/shadow size, but not its extreme ambient rejection. The failed S1.67 comparison geometry predicted B/A/C **105.699 / 81.569 / 129.582**, pitch **2.241735 mm**, dark band **1.773366 mm**. Moving height from S-scale into material dose is therefore not optically equivalent in the current bead/profile model.
+## Current physical champion and operational reference
 
-Retain the v155/v156 mapped-white visibility spacing mathematics. Do not revert the production converter to the v154 whole-profile law solely to recover the historical 102.3 prediction.
+Current physical champion, based on the user's printed/viewed card:
 
-## Thin-cap optical checkpoints
+**WWK / W0.24 / K0.16 / S1.30 / V77 / H0**
 
-Original practical candidate: **WWK / W0.22 / K0.10 / S1.2 / V50 / H0**, predicted about B/A/C **134.8 / 134.0 / 100.6**, pitch ~1.676 mm, viewer dark band ~1.216 mm.
+The current model reference is this same geometry, normalised to **B/A/C = 100/100/100** for future optimisation.
 
-Contrast-oriented points from `brightness_contrast_trade_v1.1.md`:
+High-resolution three-view reference geometry:
 
-- **~115 brightness trade:** W0.24 / K0.165 / S1.2 / V75 / H0 with +0.050 mm local pitch: B/A/C **114.816 / 103.428 / 111.011**, pitch **2.178650 mm**, dark band **1.651705 mm**.
-- **Ambient-matched:** W0.24 / K0.213 / S1.2 / V80 / H0 automatic spacing: B/A/C **111.120 / 100.009 / 111.111**, pitch **2.313729 mm**, dark band **1.771262 mm**.
-- Nearby lower-shadow ambient-matched: W0.24 / K0.205 / V75 / +0.025 mm local pitch: B/A/C **110.520 / 99.908 / 110.621**, pitch **2.254842 mm**, dark band **1.728373 mm**.
+- mean pitch: about **2.24088 mm**
+- weighted viewer dark band: about **1.72593 mm**
+- total optical height: **0.832 mm**
 
-Darkest-ambient search `dark_ambient_search_v1.2.md` minimized ambient subject to brightness >=105 and found a tall-model optimum around W0.20 / K0.115 / S1.68 / V75 with B/A/C **105.455 / 81.088 / 130.049**. This direction is now physically disfavoured because the S1.67 print-quality test failed.
+Viewer-dependent model scoring now uses three horizontal viewer positions:
 
-Scale-limited follow-up `scale_limited_search_v1.3.md` constrained S<=1.30 and shifted height into material dose. The darkest verified S<=1.30 point at B>=105 was W0.2355 / K0.195 / S1.30 / V77, B/A/C **105.038 / 90.114 / 116.561**, pitch **2.318747 mm**, dark band **1.806869 mm**. It is not preferred over the cleaner W0.24/K0.16/S1.30/V77 test because its ambient improvement is only ~0.29 index points while brightness margin and shadow are worse.
+- centre: **2/3** weight
+- viewer aligned with left screen edge: **1/6**
+- viewer aligned with right screen edge: **1/6**
 
-## v1.158 implementation checkpoint
+Keep the individual per-view scores as diagnostics as well as the weighted result. These are model predictions, not physical measurements.
 
-`3dprint_black_mirror_wave_grid_v1.158.py` is the corrected thin-cap implementation. It requires v1.157 and v1.156 beside it, plus canonical `3dprintv1.179.py` selected with `--source`.
+## Current reduced-cap physical test
 
-The reduced cap is represented in projector blocker geometry, cap draw extrusion, support top Z, executable support-segment/dry-tail Z, travel height, colour-change tower schedule, rear marking, output naming and audit metadata. The cap base/XY registration is unchanged, so the lower W tiers retain the established v1.156 geometry.
+The selected new K0.10 physical card is:
 
-The v1.158 regression test specifically rejects the v1.157 failure mode where the cap marker/descent is thin but executable extrusion remains at the old full-height Z.
+**WWK / W0.24 / K0.10 / S1.30 / V75 / H0**
 
-## Completed optical comparisons
+Use v159:
 
-- `ALR_shadow_comparison_v1.1`: reconstructed v154/v156 spacing comparison; historical v154 KWK / 0.20 / S1.2 / profile V70 remains historical reference only.
-- `ALR_material_comparison_v1.2`: material-aware PETG/PLA estimates; PETG remains the working material; physical H40 and the model indicate directional/specular return is important.
-- `ALR_compact_kkwwk_v1.0`: 3-3-3-2-1 pedestal showed the wide lower K skirt is not required for KKWWK brightness, but five-tier height still dominates viewer-shadow penalty.
-- `ALR_thincap_wwk_v1.0`: thin top-K cap retains two full W tiers while reducing cap height; subsequent trade studies are archived in the same study directory.
+```cmd
+py 3dprint_black_mirror_wave_grid_v1.159.py --source 3dprintv1.179.py --piece 1-2 --layer-map wwk --layer-height-mm 0.24 --cap-height-mm 0.10 --physical-height-scale 1.3 --visibility-percent 75 --horizontal-percent 0 --slicer-target orca
+```
 
-## Repository workflow requested by the user
+The V65-V85 reduced-cap sweep is recorded in `studies/ALR_height_reduction_v1.0/V_SWEEP_K010.md`. V75 was selected as the better balanced physical test rather than simply choosing the smallest V65 geometry.
 
-The standing completion and publication rules are in `AGENTS.md`. Always publish finished work without waiting for a separate reminder. Do not upload or commit any file over 50 MB (50,000,000 bytes per file). Check actual byte sizes first; list oversized exclusions, sizes, reason and regeneration instructions. Do not bypass through splitting, encoding, archives or Git LFS without explicit user permission.
+## Cap-position study
 
-Carry out investigation, calculations, development and testing locally. Do not use GitHub as scratch workspace.
+`studies/ALR_cap_geometry_v1.0/RESULTS.md`
 
-After each finished task, commit completed scripts, inputs, output data, reports, tests and verification records. Include exact settings, reproducible commands, dependencies, assumptions, limitations and a handover. Preserve earlier checkpoints.
+The existing single-K tilt-derived cap remains the best cap position found. A small positive K shift gave no meaningful gain after higher-resolution checking, and larger shifts violate the useful-white visibility target. A rigid two-K cap pair moved together over +/-0.15 mm was worse and was rejected at the cheap centre-only stage.
 
-Whenever a script changes, increment revision and keep filenames, internal version labels, output names, audit labels and examples consistent.
+**Decision: do not add a K-offset parameter.**
 
-Before reporting an upload as complete, verify the saved commit and repository contents. Clearly distinguish model predictions, generated-geometry audits and physical measurements.
+## Height-reduction result
 
-## Starting a new conversation
+`studies/ALR_height_reduction_v1.0/RESULTS.md`
 
-Read `AGENTS.md`, this handover and relevant completed checkpoint files. Fetch actual scripts/data required for calculations; do not treat conversation summaries as substitutes for executable inputs.
+Aggressively reducing both W tiers, e.g. W0.15/K0.08, destroys too much ambient rejection. Reducing mainly the top K cap is much cheaper optically. W0.24/K0.10 is the clean practical reduced-height direction.
+
+## WK architecture landscape
+
+`studies/ALR_WK_landscape_v1.0/RESULTS.md`
+
+WK is the compact 2-1 pyramid:
+
+```text
+    K
+  K W
+```
+
+A broad fast centre-only sweep explored:
+
+- W dose 0.12-0.28 mm
+- K dose 0.06-0.18 mm
+- S1.0, S1.1, S1.2, S1.3
+- V45-V85
+- 2,268 coarse combinations
+
+Bad regions were rejected cheaply before detailed tracing. The useful WK basin is strongly concentrated at **S1.30**, approximately W0.21-0.23, K0.12-0.16 and V70-80. Lower scales lose too much angular shielding.
+
+Final high-resolution three-view results show WK does **not** beat WWK on weighted contrast, but it is a serious compact alternative: the useful basin cuts pitch/dark-band size by roughly **36-41%** while losing only about **4-5% weighted contrast**.
+
+Two physically interesting WK points are:
+
+1. **Best weighted optical balance:** `WK / W0.225 / K0.145 / S1.30 / V78 / H0`
+   - pitch about **1.3943 mm**
+   - weighted dark band about **1.1043 mm**
+   - total height **0.4810 mm**
+   - B/A/C about **93.58 / 97.31 / 96.17** relative to the current WWK reference
+   - pitch about **37.8% smaller** than WWK
+
+2. **Bright compact point:** `WK / W0.220 / K0.120 / S1.30 / V78 / H0`
+   - pitch about **1.3166 mm**
+   - weighted dark band about **1.0293 mm**
+   - total height **0.4420 mm**
+   - B/A/C about **99.55 / 104.31 / 95.44**
+   - pitch about **41.3% smaller** than WWK
+
+The three-view calculation matters: centre-only WK results looked closer to WWK, but the right-edge viewer is weaker than the left-edge gain, reducing the weighted result. WWK therefore remains the physical and numerical champion until a WK card is printed and viewed.
+
+Complete reusable study source is committed under `studies/ALR_WK_landscape_v1.0/`, with its direct supporting source dependencies also committed normally rather than as reconstruction payloads.
+
+## Physical-height limit
+
+The tall S1.67 test printed poorly. Treat **S1.30 as the current upper physical-height-scale limit** unless new physical evidence supports going higher.
+
+## Repository workflow
+
+Read `AGENTS.md` for standing rules. In summary:
+
+- develop/test locally;
+- publish only finished work;
+- keep GitHub lightweight;
+- commit every finished script revision in full under its actual filename;
+- do not routinely preserve generated G-code/3MF or raw trace dumps;
+- keep supporting scripts when they are genuinely reusable;
+- no individual file over 50,000,000 bytes;
+- verify important GitHub files after publication before reporting completion;
+- distinguish physical observations, model predictions and generated/audited software results.
 
 Repository: `daviddootson/alr_chatgtp_files`.
-Latest converter: `3dprint_black_mirror_wave_grid_v1.158.py`.
-Dependencies: v1.157, v1.156 and canonical `3dprintv1.179.py`.
+Latest converter: `3dprint_black_mirror_wave_grid_v1.159.py`.
+Canonical emitter dependency: `3dprintv1.179.py`.
