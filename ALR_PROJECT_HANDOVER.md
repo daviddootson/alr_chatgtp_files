@@ -22,8 +22,8 @@ The current model reference is this same geometry, normalised to **B/A/C = 100/1
 
 High-resolution three-view reference geometry:
 
-- mean pitch: about **2.24088 mm**
-- weighted viewer dark band: about **1.72593 mm**
+- mean pitch: about **2.24044 mm**
+- weighted viewer dark band: about **1.72529 mm**
 - total optical height: **0.832 mm**
 
 Viewer-dependent model scoring now uses three horizontal viewer positions:
@@ -52,9 +52,9 @@ The V65-V85 reduced-cap sweep is recorded in `studies/ALR_height_reduction_v1.0/
 
 `studies/ALR_cap_geometry_v1.0/RESULTS.md`
 
-The existing single-K tilt-derived cap remains the best cap position found. A small positive K shift gave no meaningful gain after higher-resolution checking, and larger shifts violate the useful-white visibility target. A rigid two-K cap pair moved together over +/-0.15 mm was worse and was rejected at the cheap centre-only stage.
+The existing single-K tilt-derived cap remains the best cap position found for the current WWK champion. A small positive K shift gave no meaningful gain after higher-resolution checking, and larger shifts violate the useful-white visibility target. A rigid two-K cap pair moved together over +/-0.15 mm was worse and was rejected at the cheap centre-only stage.
 
-**Decision: do not add a K-offset parameter.**
+**Decision for WWK: do not add a K-offset parameter.**
 
 ## Height-reduction result
 
@@ -73,41 +73,47 @@ WK is the compact 2-1 pyramid:
   K W
 ```
 
-A broad fast centre-only sweep explored:
+The original broad search established that WK can cut feature size dramatically, but S1.3 points generally lost several percent weighted contrast versus WWK. S1.4 improved that trade and became the first selected WK physical-test direction.
 
-- W dose 0.12-0.28 mm
-- K dose 0.06-0.18 mm
-- S1.0, S1.1, S1.2, S1.3
-- V45-V85
-- 2,268 coarse combinations
+## WK best-search follow-up
 
-Bad regions were rejected cheaply before detailed tracing. The useful WK basin is strongly concentrated at **S1.30**, approximately W0.21-0.23, K0.12-0.16 and V70-80. Lower scales lose too much angular shielding.
+`studies/ALR_WK_best_search_v1.1/RESULTS.md`
 
-Final high-resolution three-view results show WK does **not** beat WWK on weighted contrast, but it is a serious compact alternative: the useful basin cuts pitch/dark-band size by roughly **36-41%** while losing only about **4-5% weighted contrast**.
+A new staged search revisited WK with the user's hard centre-brightness floor of 95% and preference for lower ambient rather than contrast obtained by simply raising both brightness and ambient. The search extended W/K/S/V through S1.55 and then added WK-specific geometry controls: common W-road shift, rear bottom-K support shift and top-K cap offset.
 
-Two physically interesting WK points are:
+The strongest ambient-biased high-resolution model candidate that still improves centre brightness is:
 
-1. **Best weighted optical balance:** `WK / W0.225 / K0.145 / S1.30 / V78 / H0`
-   - pitch about **1.3943 mm**
-   - weighted dark band about **1.1043 mm**
-   - total height **0.4810 mm**
-   - B/A/C about **93.58 / 97.31 / 96.17** relative to the current WWK reference
-   - pitch about **37.8% smaller** than WWK
+**WK / W0.20 / K0.13 / S1.55 / V76 / H0**
 
-2. **Bright compact point:** `WK / W0.220 / K0.120 / S1.30 / V78 / H0`
-   - pitch about **1.3166 mm**
-   - weighted dark band about **1.0293 mm**
-   - total height **0.4420 mm**
-   - B/A/C about **99.55 / 104.31 / 95.44**
-   - pitch about **41.3% smaller** than WWK
+with:
 
-The three-view calculation matters: centre-only WK results looked closer to WWK, but the right-edge viewer is weaker than the left-edge gain, reducing the weighted result. WWK therefore remains the physical and numerical champion until a WK card is printed and viewed.
+- W road **+0.025 mm** forward
+- rear bottom K support **-0.240 mm** rearward
+- top K cap **+0.005 mm** forward
 
-Complete reusable study source is committed under `studies/ALR_WK_landscape_v1.0/`, with its direct supporting source dependencies also committed normally rather than as reconstruction payloads.
+High-resolution centre result relative to the current WWK reference:
 
-## Physical-height limit
+- brightness **100.87**
+- ambient **86.84**
+- contrast **116.16**
 
-The tall S1.67 test printed poorly. Treat **S1.30 as the current upper physical-height-scale limit** unless new physical evidence supports going higher.
+Three-view weighted result:
+
+- brightness **98.56**
+- ambient **87.31**
+- contrast **112.88**
+
+Mean pitch is about **1.53247 mm** and weighted dark band about **1.23024 mm**, roughly 31.6% and 28.7% smaller than WWK respectively.
+
+A brighter all-round S1.55 alternative uses W +0.025 mm, rear support -0.200 mm and the canonical cap position. It predicts centre B/A/C **103.04 / 89.25 / 115.45** and weighted B/A/C **101.01 / 89.84 / 112.43**, with pitch about **1.48654 mm**.
+
+Useful lower-scale checkpoints are also recorded in the study: S1.4 gives only a modest gain, S1.5 reaches about +13% centre contrast with maintained centre brightness, and S1.525 reaches about +14.6% centre contrast. All of these remain model predictions until physically printed.
+
+Important physical caution: S1.55 has not been physically validated. Its individual road heights are not extreme (W about 0.310 mm, K about 0.2015 mm), but the higher scale changes bead cross-section/volume distribution. The poor S1.67 print means scale-based model gains must not be accepted without a physical card.
+
+## Physical-height evidence
+
+The tall S1.67 test printed poorly. The current proven physical champion remains S1.30. S1.4/S1.5/S1.55 directions are model or pending-physical-test territory and should not replace the proven physical limit until print quality is observed directly.
 
 ## Repository workflow
 
