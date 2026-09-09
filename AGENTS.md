@@ -21,6 +21,8 @@ Keep GitHub fast and lightweight. The priority is:
 - genuinely reusable helper scripts, workflows or configuration;
 - concise handover updates needed to continue the project.
 
+**Every new script revision must be committed to GitHub in full as its own normal, directly accessible source file.** A transport payload, archive, patch, generated reconstruction, workflow artifact or handover note is not a substitute for storing the complete revision. Preserve earlier complete script revisions so GitHub provides an easy-to-use source history and any finished revision can be downloaded directly without reconstruction.
+
 Do **not** routinely commit generated G-code or 3MF files, ray-trace dumps, temporary CSVs, encoded transport payloads, dependency-recovery bundles, replay outputs, caches or one-off debugging material. Generated printer files are disposable validation artifacts unless the user explicitly asks to preserve one.
 
 Do not duplicate unchanged dependencies merely for a checkpoint. If a canonical dependency such as `3dprintv1.179.py` is unchanged, record its version/checksum where useful and reuse the known local copy rather than repeatedly reconstructing or re-reading it.
